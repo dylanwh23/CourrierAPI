@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\PaqueteController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Si tienes un logout, iría aquí porque requiere un token válido para cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    
     // Tus otras rutas de API protegidas
     // Route::apiResource('tasks', TaskController::class);
 });
