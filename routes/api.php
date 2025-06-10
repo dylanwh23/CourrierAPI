@@ -6,10 +6,15 @@ use App\Http\Controllers\PaqueteController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Api\SupportController;
+
 
 
 Route::post('/register', [AuthController::class, 'register']); //ruta publica
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('contact', [SupportController::class, 'contact']);
+Route::post('support', [App\Http\Controllers\Api\SupportController::class, 'store']);
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
