@@ -2,9 +2,11 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\SupportController;
+
 Route::post('/register', [AuthController::class, 'register']); //ruta publica
 Route::post('/login', [AuthController::class, 'login']);
-
+//Route::post('/contact', [SupportController::class, 'contact']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
