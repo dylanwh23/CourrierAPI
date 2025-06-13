@@ -8,5 +8,5 @@ Gracias por escribirnos. Hemos recibido tu mensaje correctamente:
 En breve uno de nuestros agentes se pondrá en contacto contigo.
 
 Gracias por confiar en nosotros,<br>
-goChina
+goChina.
 @endcomponent
