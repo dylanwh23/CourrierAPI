@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -15,7 +14,22 @@ return [
     |
     */
 
-    'paths' => ['web/*','api/*', 'sanctum/csrf-cookie', 'login', 'register', 'logout', 'user'],
+    'paths' => [
+        'web/*',
+        'api/*',
+        'sanctum/csrf-cookie',
+        'login',
+        'register',
+        'logout',
+        'user',
+        'esAgente',
+        'listarPedidosUsuario',
+        'crearPaquete',
+        'misTicketsCliente',
+        'misTicketsAgente',
+        'consultarUsuarioPorId/*', // <-- agrega esto para rutas con parámetro
+        'consultarUsuarioPorId',   // <-- agrega esto para rutas sin parámetro
+    ],
 
     'allowed_methods' => ['*'],
 
@@ -30,5 +44,4 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
-
 ];

@@ -33,5 +33,9 @@ class Orden extends Model
         $this->status = $nuevoEstado;
         $this->save();
     }
-
+    // Una orden puede tener cero o un ticket find
+    public function ticket()
+    {
+        return $this->hasOne(Ticket::class, 'orden_id');
+    }
 }
