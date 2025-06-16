@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\AgenteSoporte;
 
 class AuthController extends Controller
 {
@@ -62,7 +62,13 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return response()->json(['message' => 'Logged in successfully']);
+        // Devuelve todos los datos del usuario autenticado
+        $user = Auth::user();
+
+        return response()->json([
+            'message' => 'Logged in successfully',
+            'user' => $user
+        ]);
     }
     public function logout(Request $request)
     {
@@ -72,5 +78,39 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json(['message' => 'Logged out successfully'], 200);
+    }
+
+    // Verifica si el usuario autenticado es agente y devuelve el estado si lo es
+    public function esAgente(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['es_agente' => false], 401);
+        }
+
+        $agente = $user->agente;
+        if ($agente) {
+            return response()->json([
+                'es_agente' => true,
+                'estado' => $agente->estado
+            ]);
+        } else {
+            return response()->json(['es_agente' => false]);
+        }
+    }
+
+
+    // Devuelve los datos de un usuario por su ID solo si el autenticado es agente
+    public function consultarUsuarioPorIdSoloAgentes(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user || !$user->agente) {
+            return response()->json(['message' => 'No autorizado, solo agentes'], 403);
+        }
+        $usuario = \App\Models\User::find($id);
+        if (!$usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+        return response()->json($usuario);
     }
 }

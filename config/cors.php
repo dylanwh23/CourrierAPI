@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -15,7 +14,29 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'register', 'logout', 'user', 'altaOrden', 'ordenes/*', 'createCompra/*', 'confirmarRecepcionCompra/*', 'confirmarEnvioOrden/*', 'contact', 'support'],
+    'paths' => [
+        'api/*',
+        'sanctum/csrf-cookie',
+        'login',
+        'register',
+        'logout',
+        'user',
+        'altaOrden',
+        'ordenes/*',
+        'createCompra/*',
+        'confirmarRecepcionCompra/*',
+        'confirmarEnvioOrden/*',
+        'contact',
+        'support',
+        'web/*',
+        'esAgente',
+        'listarPedidosUsuario',
+        'crearPaquete',
+        'misTicketsCliente',
+        'misTicketsAgente',
+        'consultarUsuarioPorId/*',
+        'consultarUsuarioPorId',
+    ],
 
     'allowed_methods' => ['*'],
 
@@ -30,5 +51,4 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
-
 ];
