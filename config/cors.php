@@ -15,13 +15,20 @@ return [
     */
 
     'paths' => [
-        'web/*',
         'api/*',
         'sanctum/csrf-cookie',
         'login',
         'register',
         'logout',
         'user',
+        'altaOrden',
+        'ordenes/*',
+        'createCompra/*',
+        'confirmarRecepcionCompra/*',
+        'confirmarEnvioOrden/*',
+        'contact',
+        'support',
+        'web/*',
         'esAgente',
         'listarPedidosUsuario',
         'crearPaquete',
@@ -33,7 +40,6 @@ return [
         'sse/*',
         'sse',
         'broadcasting/auth',
-       
     ],
 
     'allowed_methods' => ['*'],

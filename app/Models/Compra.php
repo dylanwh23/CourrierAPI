@@ -14,7 +14,8 @@ class Compra extends Model
         'estado',
         'descripcion',
         'orden_id',
-        'imagen_factura'
+        'imagen_factura',
+        'proveedor'
     ];
     public function orden()
     {
