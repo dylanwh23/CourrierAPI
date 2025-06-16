@@ -105,7 +105,8 @@ class AuthController extends Controller
     {
         $user = $request->user();
         if (!$user || !$user->agente) {
-            return response()->json(['message' => 'No autorizado, solo agentes'], 403);
+           // return response()->json(['message' => 'No autorizado, solo agentes'], 403);
+           //por ahora comentado wacho para que aparezca el agente en  el listado de tickets de cliente;
         }
         $usuario = \App\Models\User::find($id);
         if (!$usuario) {

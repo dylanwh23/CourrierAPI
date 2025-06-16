@@ -26,4 +26,5 @@ class Mensajes extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    // Puedes dejar el modelo igual, solo necesitas registrar el observer
 }

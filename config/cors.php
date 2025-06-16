@@ -32,10 +32,14 @@ return [
         'esAgente',
         'listarPedidosUsuario',
         'crearPaquete',
-        'misTicketsCliente',
-        'misTicketsAgente',
+        'misTickets',
         'consultarUsuarioPorId/*',
         'consultarUsuarioPorId',
+        'mensajesPorTicket/*',
+        'addMensaje/*',
+        'sse/*',
+        'sse',
+        'broadcasting/auth',
     ],
 
     'allowed_methods' => ['*'],
@@ -47,6 +51,7 @@ return [
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
+    
 
     'max_age' => 0,
 
