@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Api\SupportController;
-
+use Illuminate\Support\Facades\Broadcast;
 
 
 Route::post('/register', [AuthController::class, 'register']); //ruta publica

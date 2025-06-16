@@ -5,23 +5,24 @@ use App\Models\Ticket;
 use App\Models\Mensajes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Events\MensajeEnviado;
 
 class TicketController extends Controller
 {
-    // Listar tickets
-     public function ticketsClienteAuth()
+    // Unifica ticketsClienteAuth y ticketsAgenteAuth: lista tickets según el tipo de usuario autenticado
+    public function misTickets()
     {
         $user = Auth::user();
-        $tickets = Ticket::where('user_id', $user->id)->with('mensajes')->get();
-        return response()->json($tickets);
-    }
 
-    // Lista los tickets asignados al agente autenticado
-    public function ticketsAgenteAuth()
-    {
-        $user = Auth::user();
-        $tickets = Ticket::where('agente_id', $user->id)->with('mensajes')->get();
+        // Si el usuario es agente, lista los tickets asignados a él
+        if ($user->agente) {
+            $tickets = Ticket::where('agente_id', $user->id)->with('mensajes')->get();
+        } else {
+            // Si es cliente, lista sus propios tickets
+            $tickets = Ticket::where('user_id', $user->id)->with('mensajes')->get();
+        }
         return response()->json($tickets);
     }
 
@@ -39,12 +40,40 @@ class TicketController extends Controller
     public function addMensaje(Request $request, $ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);
-        $ticket->asignarAgenteAleatorio();
         $mensaje = new Mensajes($request->only([
             'contenido', 'user_id', 'tipo', 'adjunto'
         ]));
         $mensaje->ticket_id = $ticket->id;
         $mensaje->save();
+
+        // Forzar el uso del driver pusher y loguear el resultado
+        $result = broadcast(new MensajeEnviado($mensaje))->toOthers();
+        Log::info('Broadcast MensajeEnviado', [
+            'mensaje_id' => $mensaje->id,
+            'broadcast_result' => $result,
+          
+        ]);
+
         return response()->json($mensaje, 201);
     }
+
+    // Listar mensajes de un ticket específico SOLO si el usuario autenticado es el agente asignado o el cliente
+    public function mensajesPorTicket($ticketId)
+    {
+        $user = Auth::user();
+        $ticket = \App\Models\Ticket::find($ticketId);
+
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket no encontrado'], 404);
+        }
+
+        // Solo el cliente o el agente asignado pueden ver los mensajes
+        if ($ticket->user_id !== $user->id && $ticket->agente_id !== $user->id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $mensajes = \App\Models\Mensajes::where('ticket_id', $ticketId)->orderBy('created_at')->get();
+        return response()->json($mensajes);
+    }
 }
+
