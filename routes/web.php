@@ -1,13 +1,29 @@
 <?php
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OrdenesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\PaqueteController;
+use Illuminate\Support\Facades\Auth;
 
 Route::post('/register', [AuthController::class, 'register']); //ruta publica
 Route::post('/login', [AuthController::class, 'login']);
-//Route::post('/contact', [SupportController::class, 'contact']);
+
+// Ruta principal de verificación del email
+// Esta es la ruta que se usará para el enlace del correo electrónico.
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); // Marca el email como verificado en la base de datos
+    return redirect(env('FRONTEND_URL') . '/email-verified?status=success');
+})->middleware(['signed'])->name('verification.verify');
+
+
+// Ruta para reenviar el correo de verificación (si el usuario lo solicita)
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!'); // O un JSON response para API
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -15,8 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Si tienes un logout, iría aquí porque requiere un token válido para cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/listarPedidosUsuario', [PaqueteController::class, 'listarPedidosUsuario']);
-    Route::post('/crearPaquete', [PaqueteController::class, 'crearPaquete']);
+    Route::post('/altaOrden', [OrdenesController::class, 'createOrden']);
+    Route::get('/ordenes/{userId}', [OrdenesController::class, 'getOrdenesByUserId']);
+    Route::post('/createCompra/{ordenId}', [OrdenesController::class, 'createCompra']);
+    Route::post('/confirmarEnvioOrden/{ordenId}', [OrdenesController::class, 'confirmarEnvioOrden']);
+    Route::post('/confirmarRecepcionCompra/{compraId}', [OrdenesController::class, 'confirmarRecepcionCompra']);
     // Tus otras rutas de API protegidas
     // Route::apiResource('tasks', TaskController::class);
 });

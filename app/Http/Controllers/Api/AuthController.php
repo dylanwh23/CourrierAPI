@@ -32,7 +32,7 @@ class AuthController extends Controller
                 'cedula' => $request->cedula,
                 'fecha_nacimiento' => $request->date_of_birth,
             ]);
-            //$token = $user->createToken('api_token')->plainTextToken;
+            $user->sendEmailVerificationNotification();
             return response()->json([
                 'message' => 'Usuario registrado exitosamente',
                 'user' => [
@@ -40,7 +40,6 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                 ],
-                //'token' => $token, A ARREGALR XD
             ], Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return response()->json([

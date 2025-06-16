@@ -12,6 +12,8 @@ class Orden extends Model
     protected $fillable = [
         'user_id',
         'status',
+        'ultima_fecha_actualizacion_estado',
+        'tracking_id',
         'valor_total',
         'compras' // Relación con el modelo Compra
     ];
@@ -31,6 +33,7 @@ class Orden extends Model
     public function actualizarStatus($nuevoEstado)
     {
         $this->status = $nuevoEstado;
+        $this->ultima_fecha_actualizacion_estado = now();
         $this->save();
     }
 

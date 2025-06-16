@@ -16,7 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('status')->default('En espera'); // 'En espera', 'En viaje', 'En centro de distribución', 'Entregado', 'Cancelado'
             $table->float('valor_total')->default(0);
+            $table->dateTime('ultima_fecha_actualizacion_estado')->default(now());
+            $table->string('tracking_id')->unique();
             $table->timestamps();
+            
         });
     }
 
