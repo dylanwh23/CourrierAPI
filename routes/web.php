@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Api\SupportController;
-
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login']);
 // Esta es la ruta que se usará para el enlace del correo electrónico.
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill(); // Marca el email como verificado en la base de datos
-    return redirect(env('FRONTEND_URL') . '/email-verified?status=success');
+    return redirect(env('FRONTEND_URL') . '/?email-verified=success');
 })->middleware(['signed'])->name('verification.verify');
 
 
@@ -41,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/createCompra/{ordenId}', [OrdenesController::class, 'createCompra']);
     Route::post('/confirmarEnvioOrden/{ordenId}', [OrdenesController::class, 'confirmarEnvioOrden']);
     Route::post('/confirmarRecepcionCompra/{compraId}', [OrdenesController::class, 'confirmarRecepcionCompra']);
-   
     Route::get('/esAgente', [AuthController::class, 'esAgente']);
     Route::get('/misTickets', [TicketController::class, 'misTickets']);
     // Puedes eliminar o comentar las rutas antiguas si ya no las usas:
