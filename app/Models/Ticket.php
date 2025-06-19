@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AgenteSoporte;
 
@@ -42,6 +43,11 @@ class Ticket extends Model
     // Método para asignar un agente de soporte activo aleatorio
     public static function asignarAgenteAleatorio()
     {
-        return AgenteSoporte::where('estado', 'activo')->inRandomOrder()->first();
+        $agente = AgenteSoporte::where('estado', 'activo')->inRandomOrder()->first();
+        if (!$agente) {
+            Log::warning('AsignarAgenteAleatorio - No hay agentes activos disponibles.');
+            throw new \Exception('No hay agentes disponibles actualmente.');
+        }
+        return $agente->user_id;
     }
 }

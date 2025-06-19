@@ -105,13 +105,35 @@ class AuthController extends Controller
     {
         $user = $request->user();
         if (!$user || !$user->agente) {
-           // return response()->json(['message' => 'No autorizado, solo agentes'], 403);
-           //por ahora comentado wacho para que aparezca el agente en  el listado de tickets de cliente;
+            // return response()->json(['message' => 'No autorizado, solo agentes'], 403);
+            //por ahora comentado wacho para que aparezca el agente en  el listado de tickets de cliente;
         }
         $usuario = \App\Models\User::find($id);
         if (!$usuario) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
         return response()->json($usuario);
+    }
+    // cambiar estado agente
+    public function actualizarEstadoAgente(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->agente) {
+            return response()->json(['message' => 'Solo los agentes pueden cambiar su estado'], 403);
+        }
+
+        $request->validate([
+            'estado' => 'required|in:activo,desconectado',
+        ]);
+
+        $agente = $user->agente;
+        $agente->estado = $request->estado;
+        $agente->save();
+
+        return response()->json([
+            'message' => 'Estado actualizado correctamente',
+            'estado' => $agente->estado,
+        ]);
     }
 }

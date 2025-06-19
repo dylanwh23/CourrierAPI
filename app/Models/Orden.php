@@ -9,6 +9,7 @@ class Orden extends Model
 {
     /** @use HasFactory<\Database\Factories\OrdenFactory> */
     use HasFactory;
+    protected $table = 'ordens';
     protected $fillable = [
         'user_id',
         'status',

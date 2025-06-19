@@ -37,9 +37,9 @@ return [
         'consultarUsuarioPorId',
         'mensajesPorTicket/*',
         'addMensaje/*',
-        'sse/*',
-        'sse',
-        'broadcasting/auth',
+        'tickets/*/estado',
+        'crearTickets',
+        'actualizarEstadoAgente',
     ],
 
     'allowed_methods' => ['*'],

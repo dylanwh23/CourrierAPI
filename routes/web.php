@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Api\SupportController;
-use App\Http\Controllers\PaqueteController;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Support\Facades\Log;
@@ -41,8 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/createCompra/{ordenId}', [OrdenesController::class, 'createCompra']);
     Route::post('/confirmarEnvioOrden/{ordenId}', [OrdenesController::class, 'confirmarEnvioOrden']);
     Route::post('/confirmarRecepcionCompra/{compraId}', [OrdenesController::class, 'confirmarRecepcionCompra']);
-    Route::get('/listarPedidosUsuario', [PaqueteController::class, 'listarPedidosUsuario']);
-    Route::post('/crearPaquete', [PaqueteController::class, 'crearPaquete']);
+   
     Route::get('/esAgente', [AuthController::class, 'esAgente']);
     Route::get('/misTickets', [TicketController::class, 'misTickets']);
     // Puedes eliminar o comentar las rutas antiguas si ya no las usas:
@@ -51,6 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/consultarUsuarioPorId/{id}', [AuthController::class, 'consultarUsuarioPorIdSoloAgentes']);
     Route::get('/mensajesPorTicket/{ticketId}', [TicketController::class, 'mensajesPorTicket']);
     Route::post('/addMensaje/{ticketId}', [TicketController::class, 'addMensaje']);
+     Route::post('/addMensaje/{ticketId}', [TicketController::class, 'addMensaje']);
+     Route::post('/tickets/{id}/estado', [TicketController::class, 'cambiarEstado']);
+     Route::post('/crearTickets', [TicketController::class, 'store']);
+     Route::post('/actualizarEstadoAgente', [AuthController::class, 'actualizarEstadoAgente']);
     // Tus otras rutas de API protegidas
     // Route::apiResource('tasks', TaskController::class);
     // observer evento mensajes nuevos 
