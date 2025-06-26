@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ordenes', function (Blueprint $table) { //esta mal escrito orden, deberia ser orden pero lo hace laravel automatico xd
+        Schema::create('ordens', function (Blueprint $table) { //esta mal escrito orden, deberia ser orden pero lo hace laravel automatico xd
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('status')->default('En espera'); // 'En espera', 'En viaje', 'En centro de distribución', 'Entregado', 'Cancelado'
