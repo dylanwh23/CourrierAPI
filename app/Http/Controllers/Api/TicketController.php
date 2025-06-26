@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Events\MensajeEnviado;
+use App\Events\TicketActualizado;
 use App\Models\Orden;
 
 class TicketController extends Controller
@@ -58,8 +59,8 @@ class TicketController extends Controller
                     $data['agente_id'] = $agenteId;
                 }
             }
-
             $ticket = Ticket::create($data);
+            event(new TicketActualizado($ticket, 'creado'));
 
             return response()->json([
                 'success' => true,
@@ -76,7 +77,7 @@ class TicketController extends Controller
     // Agregar un mensaje a un ticket
     public function addMensaje(Request $request, $ticketId)
     {
-        $start = microtime(true);
+      
 
         $ticket = Ticket::findOrFail($ticketId);
         $mensaje = new Mensajes($request->only([
@@ -136,7 +137,7 @@ class TicketController extends Controller
 
         $ticket->estado = $nuevoEstado;
         $ticket->save();
-
+        event(new TicketActualizado($ticket, 'actualizado'));
         return response()->json(['message' => 'Estado actualizado', 'estado' => $ticket->estado]);
     }
 }
