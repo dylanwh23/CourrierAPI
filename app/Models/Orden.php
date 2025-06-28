@@ -33,6 +33,14 @@ class Orden extends Model
     }
     public function actualizarStatus($nuevoEstado)
     {
+         if ($nuevoEstado === "En viaje") {
+            dispatch(function () {
+                sleep(5);
+                $this->status = "Arribado";
+                $this->ultima_fecha_actualizacion_estado = now();
+                $this->save();
+            });
+        }
         $this->status = $nuevoEstado;
         $this->ultima_fecha_actualizacion_estado = now();
         $this->save();

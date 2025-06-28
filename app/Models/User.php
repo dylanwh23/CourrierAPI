@@ -62,4 +62,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(AgenteSoporte::class, 'user_id');
     }
+    
 }

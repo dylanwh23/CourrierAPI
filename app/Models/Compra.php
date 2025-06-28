@@ -25,6 +25,7 @@ class Compra extends Model
     {
         $this->estado = $nuevoEstado;
         $this->save();
+        
     }
     public function actualizarValorDeclarado($nuevoValor)
     {

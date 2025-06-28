@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('/tickets/{id}/estado', [TicketController::class, 'cambiarEstado']);
      Route::post('/crearTickets', [TicketController::class, 'store']);
      Route::post('/actualizarEstadoAgente', [AuthController::class, 'actualizarEstadoAgente']);
+     Route::post('/updatePassword', [AuthController::class, 'updatePassword']);
     // Tus otras rutas de API protegidas
     // Route::apiResource('tasks', TaskController::class);
     // observer evento mensajes nuevos 

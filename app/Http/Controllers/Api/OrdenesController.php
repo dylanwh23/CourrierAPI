@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Orden;
 use App\Models\Compra;
+use Illuminate\Support\Str;
 
 
 
@@ -14,6 +15,10 @@ class OrdenesController extends Controller
 {
     public function createOrden(Request $request)
     {
+        // cargar factura
+        $file = $request->file('imagen_factura');
+        $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('facturas', $fileName, 'public');
         try {
             $orden = Orden::create([
                 'user_id' => $request->user_id,
@@ -24,9 +29,11 @@ class OrdenesController extends Controller
                 'estado' => 'En viaje a casilla',
                 'descripcion' => $request->descripcion,
                 'orden_id' => $orden->id,
-                'imagen_factura' => $request->imagen_factura,
+                'imagen_factura' => $fileName,
                 'proveedor' => $request->proveedor,
             ]);
+
+           
             $orden->compras()->save($compra);
             $orden->actualizarValorTotal();
         } catch (\Exception $e) {
@@ -51,14 +58,18 @@ class OrdenesController extends Controller
     }
     public function createCompra(Request $request, $ordenId)
     {
+               // cargar factura
+        $file = $request->file('imagen_factura');
+        $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('facturas', $fileName, 'public');
         try {
             $orden = Orden::findOrFail($ordenId);
-            $compra = Compra::create([
+              $compra = Compra::create([
                 'valor_declarado' => $request->valor_declarado,
                 'estado' => 'En viaje a casilla',
                 'descripcion' => $request->descripcion,
                 'orden_id' => $orden->id,
-                'imagen_factura' => $request->imagen_factura,
+                'imagen_factura' => $fileName,
                 'proveedor' => $request->proveedor,
             ]);
             $orden->compras()->save($compra);
@@ -109,5 +120,4 @@ class OrdenesController extends Controller
             ], 500);
         }
     }
-
 }

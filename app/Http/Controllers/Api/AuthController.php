@@ -136,4 +136,29 @@ class AuthController extends Controller
             'estado' => $agente->estado,
         ]);
     }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8',
+            'confirm_new_password' => 'required|string|min:8',
+        ]);
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado'], 401);
+        }
+        // Ensure $user is an Eloquent model instance
+        $eloquentUser = \App\Models\User::find($user->id);
+        if (!Hash::check($request->current_password, $eloquentUser->password)) {
+            return response()->json(['message' => 'Contraseña actual incorrecta'], 403);
+        }
+        if ($request->new_password !== $request->confirm_new_password) {
+            return response()->json(['message' => 'Las nuevas contraseñas no coinciden'], 400);
+        }
+        $eloquentUser->password = Hash::make($request->new_password);
+        $eloquentUser->save();
+        
+        return response()->json(['message' => 'Contraseña actualizada exitosamente'], 200);
+    }
 }

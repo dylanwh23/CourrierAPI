@@ -40,6 +40,7 @@ return [
         'tickets/*/estado',
         'crearTickets',
         'actualizarEstadoAgente',
+        'updatePassword',
     ],
 
     'allowed_methods' => ['*'],
