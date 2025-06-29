@@ -30,49 +30,57 @@ class TicketController extends Controller
     }
 
     // Crear un ticket
-    public function store(Request $request)
-    {
-        try {
-            $user = Auth::user();
+  public function store(Request $request)
+{
+    try {
+        $user = Auth::user();
 
-            $ordenId = $request->orden_id;
-            $asunto = $request->asunto;
-            $clienteId = $user->agente ? $request->user_id : $user->id;
-            $orden = Orden::findOrFail($ordenId);
+        $ordenId = $request->orden_id;
+        $asunto = $request->asunto;
+        $orden = Orden::findOrFail($ordenId);
 
+        if ($user->agente) {
+            // Si es agente, usamos el user_id del cliente directamente desde la orden
+            $clienteId = $orden->user_id;
+        } else {
+            // Si es cliente, validamos que la orden le pertenezca
+            $clienteId = $user->id;
             if ((int) $orden->user_id !== (int) $clienteId) {
                 throw new \Exception('El usuario no pertenece a esta orden');
             }
-
-            $data = [
-                'orden_id' => $ordenId,
-                'asunto' => $asunto,
-                'estado' => 'pendiente',
-                'user_id' => $clienteId,
-            ];
-
-            if ($user->agente) {
-                $data['agente_id'] = $user->id;
-            } else {
-                $agenteId = Ticket::asignarAgenteAleatorio();
-                if ($agenteId) {
-                    $data['agente_id'] = $agenteId;
-                }
-            }
-            $ticket = Ticket::create($data);
-            event(new TicketActualizado($ticket, 'creado'));
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Ticket creado correctamente',
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(), // esto captura el mensaje en Angular como err.error.error
-            ], 403);
         }
+
+        $data = [
+            'orden_id' => $ordenId,
+            'asunto' => $asunto,
+            'estado' => 'pendiente',
+            'user_id' => $clienteId,
+        ];
+
+        if ($user->agente) {
+            $data['agente_id'] = $user->id;
+        } else {
+            $agenteId = Ticket::asignarAgenteAleatorio();
+            if ($agenteId) {
+                $data['agente_id'] = $agenteId;
+            }
+        }
+
+        $ticket = Ticket::create($data);
+        event(new TicketActualizado($ticket, 'creado'));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket creado correctamente',
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 403);
     }
+}
 
     // Agregar un mensaje a un ticket
     public function addMensaje(Request $request, $ticketId)
