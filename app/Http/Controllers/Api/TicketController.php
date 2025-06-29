@@ -77,7 +77,7 @@ class TicketController extends Controller
     // Agregar un mensaje a un ticket
     public function addMensaje(Request $request, $ticketId)
     {
-      
+
 
         $ticket = Ticket::findOrFail($ticketId);
         $mensaje = new Mensajes($request->only([

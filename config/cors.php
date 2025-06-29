@@ -41,6 +41,7 @@ return [
         'crearTickets',
         'actualizarEstadoAgente',
         'updatePassword',
+        'chatbot',
     ],
 
     'allowed_methods' => ['*'],
@@ -52,7 +53,7 @@ return [
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
-    
+
 
     'max_age' => 0,
 

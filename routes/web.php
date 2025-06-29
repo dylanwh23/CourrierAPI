@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrdenesController;
+use App\Http\Controllers\Api\ChatbotController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -22,6 +23,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     return redirect(env('FRONTEND_URL') . '/?email-verified=success');
 })->middleware(['signed'])->name('verification.verify');
 
+// Ruta pública para el chatbot
 
 // Ruta para reenviar el correo de verificación (si el usuario lo solicita)
 Route::post('/email/verification-notification', function (Request $request) {
@@ -33,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::post('/chatbot', [ChatbotController::class, 'procesarMensaje']);
     // Si tienes un logout, iría aquí porque requiere un token válido para cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/altaOrden', [OrdenesController::class, 'createOrden']);
@@ -55,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('/updatePassword', [AuthController::class, 'updatePassword']);
     // Tus otras rutas de API protegidas
     // Route::apiResource('tasks', TaskController::class);
-    // observer evento mensajes nuevos 
+    // observer evento mensajes nuevos
     Broadcast::routes(['middleware' => ['web']]);
 
 });
