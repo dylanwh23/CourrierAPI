@@ -10,23 +10,33 @@ class ContactReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $name;
-    public $messageContent;
+    public string $name;
+    public string $messageContent;
+    public ?string $link;
 
-    public function __construct(string $name, string $message)
+    /**
+     * Crear una nueva instancia del mensaje.
+     */
+    public function __construct(string $name, string $message, ?string $link = null)
     {
         $this->name = $name;
         $this->messageContent = $message;
+        $this->link = $link;
     }
 
+    /**
+     * Construir el mensaje.
+     */
     public function build()
     {
         return $this
+            ->from('no.reply.chinago@gmail.com', 'GoChina Soporte')
             ->subject("Gracias por tu mensaje, {$this->name}")
             ->markdown('emails.contact.received')
             ->with([
-                'name'    => $this->name,
+                'name' => $this->name,
                 'body' => $this->messageContent,
+                'link' => $this->link,
             ]);
     }
 }

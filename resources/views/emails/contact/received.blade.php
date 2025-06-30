@@ -3,10 +3,15 @@
 
 Gracias por escribirnos. Hemos recibido tu mensaje correctamente:
 
-> {{ $body }}
+{{ $body }}
 
-En breve uno de nuestros agentes se pondrá en contacto contigo.
+@if(isset($link))
+@component('mail::button', ['url' => $link])
+Ir al chat de soporte
+@endcomponent
+@endif
+
 
 Gracias por confiar en nosotros,<br>
-goChina.
+{{ config('app.name') }}
 @endcomponent
