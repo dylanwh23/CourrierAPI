@@ -9,12 +9,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactReceived;
 use App\Models\User;
 use App\Models\Ticket;
+use App\Events\TicketActualizado;
 
 class SupportController extends Controller
 {
     public function contact(Request $request)
     {
-        // 1) Validar datos básicos del formulario
+        // 1. Validar datos
         $data = $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => 'required|email|max:255',
@@ -24,19 +25,15 @@ class SupportController extends Controller
         Log::info('[CONTACT] Payload recibido:', ['raw' => $request->getContent()]);
         Log::info('[CONTACT] Datos validados:', $data);
 
-        // 2) Buscar el usuario por email
+        // 2. Buscar usuario por email
         $user = User::where('email', $data['email'])->first();
 
         if (!$user) {
-            // Construir mensaje que incluye el texto original + aviso de crear cuenta
             $fullMessage = $data['message'] . "\n\n" .
-                "Hola {$data['name']}, para poder ayudarte necesitamos que tengas una cuenta en ChinaGO.\n\nCreá tu cuenta y volvé a contactarnos cuando gustes 💙";
+                "Hola {$data['name']}, para poder ayudarte necesitamos que tengas una cuenta en ChinaGO.\n\n" .
+                "Creá tu cuenta y volvé a contactarnos cuando gustes 💙";
 
-            // Enviar mail con ese mensaje completo (sin link, porque no tiene ticket)
-            Mail::to($data['email'])->send(new ContactReceived(
-                $data['name'],
-                $fullMessage
-            ));
+            Mail::to($data['email'])->send(new ContactReceived($data['name'], $fullMessage));
 
             Log::info("[CONTACT] Usuario inexistente, se le sugirió registrarse: {$data['email']}");
 
@@ -46,25 +43,49 @@ class SupportController extends Controller
             ]);
         }
 
-        // 3) Crear ticket con el contenido del mensaje como asunto
+        try {
+            $agenteId = Ticket::asignarAgenteAleatorio();
+
+            // Si llegó hasta acá, hay agente asignado, seguí con la lógica normal
+            // Por ejemplo, crear el ticket y asignar el agente...
+
+        } catch (\Exception $e) {
+            // La excepción viene porque no hay agentes disponibles
+            Log::warning("No hay agentes disponibles para asignar al usuario ID {$user->id}");
+
+            // Envío el mail
+            Mail::raw('No hay agentes disponibles ahora. Por favor intente contactarnos entre las 9:00 y las 18:00.', function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Agentes no disponibles');
+            });
+
+            // Respondemos sin error para no romper la app
+            return response()->json([
+                'message' => 'No hay agentes disponibles en este momento. Te enviamos un correo con más detalles.'
+            ], 200);
+        }
+
+        // 4. Crear ticket
         $ticket = Ticket::create([
-            'orden_id' => 0,
-            'asunto' => $data['message'],
-            'estado' => 'pendiente',
-            'user_id' => $user->id,
-            'agente_id' => null,
+            'orden_id'  => 0,
+            'asunto'    => $data['message'],
+            'estado'    => 'pendiente',
+            'user_id'   => $user->id,
+            'agente_id' => $agenteId,
         ]);
 
-        // 4) Preparar mensaje para mail, agregando info de ticket y link
-        $mailMessage = $data['message'] . "\n\n" .
-            "Se creó un ticket de soporte para tu consulta.";
+        // 5. Emitir evento
+        event(new TicketActualizado($ticket, 'creado'));
 
+        // 6. Enviar mail con link
         $link = 'http://localhost:4200/soportechat';
+        $mailMessage = $data['message'] . "\n\n" .
+            "Se creó un ticket de soporte para tu consulta.\n\n" .
+            "Podés continuar tu consulta haciendo clic aquí:\n$link";
 
-        // Enviar mail con mensaje y link
         Mail::to($user->email)->send(new ContactReceived($user->name, $mailMessage, $link));
 
-        Log::info('[CONTACT] Ticket creado para user_id=' . $user->id . ', ticket_id=' . $ticket->id);
+        Log::info("[CONTACT] Ticket creado y notificado para user_id={$user->id}, ticket_id={$ticket->id}");
 
         return response()->json([
             'status'  => 'success',
